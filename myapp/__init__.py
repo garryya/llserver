@@ -14,6 +14,8 @@ def create_app():
     app.register_blueprint(myapp.views.auth.auth_view, url_prefix="/auth")
     app.register_blueprint(myapp.views.report.report_view, url_prefix="/report")
 
+    app.config['DEBUG'] = True
+
     return app
 
 

@@ -1,6 +1,5 @@
 import flask
 
-
 report_view = flask.Blueprint('report', __name__)
 
 

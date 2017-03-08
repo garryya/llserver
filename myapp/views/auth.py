@@ -1,7 +1,11 @@
 import flask
-
+from myapp.models import Session, DB
+from myapp.models import auth
 
 auth_view = flask.Blueprint('auth', __name__)
+
+
+db = DB('data/credentials.db')
 
 
 @auth_view.route('/login', methods=['POST'])
@@ -27,7 +31,18 @@ def login():
 
     Return: "OK" on success. On failure, return HTTP 403.
     """
-    return "TODO: Implement login"
+    authorization = flask.request.form if hasattr(flask.request, 'form') and flask.request.form else flask.request.authorization
+    username = authorization['username']
+    password = authorization['password']
+    user = db.get_user(username)
+    if not user:
+        return 'Login failed: user {} not found'.format(username), 403
+    try:
+        auth.check_password(password, user['password_hash'])
+    except auth.InvalidCredentials:
+        return 'Login failed: bad password', 403
+    Session.set(user)
+    return "OK"
 
 
 @auth_view.route('/whoami', methods=['GET'])
@@ -48,7 +63,10 @@ def whoami():
 
     If user is not logged in return HTTP 403
     """
-    return "TODO: Implement whoami"
+    if not Session.logged():
+        return 'Not logged in', 403
+    user = Session.get(fields=['username', 'first_name', 'last_name'])
+    return flask.jsonify(user)
 
 
 @auth_view.route('/logout', methods=['POST'])
@@ -58,4 +76,7 @@ def logout():
 
     URL: /auth/logout
     """
-    return "TODO: Implement logout"
+    if not Session.logged():
+        return 'Not logged in', 403
+    Session.unset()
+    return "Logged out"

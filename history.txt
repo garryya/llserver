@@ -1,0 +1,28 @@
+  231  cd ~/work/lastline-challenge/
+  232  sqlite3 data/credentials.db '.pragma '
+  233  sqlite3 data/credentials.db '.tables '
+  236  sqlite3 -header data/credentials.db 'select * from accouts'
+  237  sqlite3 -header data/credentials.db 'select * from accounts'
+  238  sqlite3 -header data/credentials.db 'select * from account'
+
+sqlite3 -header data/credentials.db 'select * from account join account_permission using(account_id) join permission using (permission_id) where username="jsmith@lastline.com"'
+
+
+  405  curl -X POST -u 'jadmin@lastline.com:d81jklk16a' localhost:8080/auth/login
+  406  curl -X POST -u 'jadmin@lastline.com:aio1jda61SJh' localhost:8080/auth/login
+  407  curl localhost:8080/auth/whoami
+  408  curl -X POST -u 'jadmin@lastline.com:aio1jda61SJh' localhost:8080/auth/login
+  409  curl localhost:8080/auth/whoami
+  410  curl localhost:8080/auth/logout
+  411  curl -X POST localhost:8080/auth/logout
+  413  history | grep curl | less
+  414  curl -X POST -u 'aaaa@lastline.com:aio1jda61SJh' localhost:8080/auth/login
+  415  curl -X POST -u 'jguest@lastline.com:aio1jda61SJh' localhost:8080/auth/login
+  416  curl -X POST -u 'jadmin@lastline.com:aio1jda61SJh' localhost:8080/auth/login
+  417  curl -X POST -u 'jadmin@lastline.com:aio1jda61SJh' localhost:8080/auth/logout
+  418  curl -X POST -u 'jadmin@lastline.com:aio1jda61SJh' localhost:8080/auth/whoami
+  419  curl localhost:8080/auth/whoami
+  420  curl -X POST -u 'jadmin@lastline.com:aio1jda61SJh' localhost:8080/auth/login
+  421  curl localhost:8080/auth/whoami
+
+
