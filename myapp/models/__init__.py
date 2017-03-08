@@ -3,12 +3,16 @@ import sqlite3
 
 
 #TODO logging
+#TODO remove cred check copypast
+#TODO session timeout
+#TODO use flas session, maybe...
 #TODO configuration file --> flask conf
 #TODO exception handling
 #TODO multiple-session, concurrency
 #TODO HTTP error constants (flask.ext.api?)
 #TODO differentiate auth errors
-#TODO session timeout
+#TODO SQLAlchemy, ORM
+#TODO testing: classes, group by functionality (login, logout etc.)
 
 
 class Session:
@@ -37,6 +41,14 @@ class Session:
     @staticmethod
     def unset():
         Session.__user = None
+
+    @staticmethod
+    def username():
+        return Session.__user['username'] if Session.logged() else None
+
+    @staticmethod
+    def is_user(user):
+        return Session.logged() and Session.username() == user
 
 
 class DB:
