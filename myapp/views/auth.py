@@ -39,7 +39,7 @@ def verify_credentials(password, password_hash):
     try:
         auth.check_password(password, password_hash)
     except auth.InvalidCredentials:
-        flask.abort(httplib.FORBIDDEN, 'Login failed: bad password')
+        flask.abort(httplib.FORBIDDEN, 'Authentication failed')
 
 
 @auth_view.route('/login', methods=['POST'])

@@ -1,5 +1,4 @@
-Put your tests in this directory, and let us know how to run them in this readme file.
+From project root:
 
-
-> cd myapp_test
-> py.test
+> runserver.py
+> myapp_test/py.test [-s] [-v]

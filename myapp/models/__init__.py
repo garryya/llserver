@@ -13,6 +13,7 @@ import sqlite3
 #TODO differentiate auth errors
 #TODO SQLAlchemy, ORM
 #TODO testing: classes, group by functionality (login, logout etc.)
+#TODO testing: more mocking
 
 
 class Session:
