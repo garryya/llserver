@@ -1,6 +1,6 @@
+#!/usr/bin/python -B
 from time import time
 import sqlite3
-
 
 #TODO logging
 #TODO remove cred check copypast

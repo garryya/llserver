@@ -1,3 +1,4 @@
+#!/usr/bin/python -B
 import pytest
 import httplib
 import httplib2

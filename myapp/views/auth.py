@@ -1,3 +1,4 @@
+#!/usr/bin/python -B
 import flask
 from myapp.models import Session, DB
 from myapp.models import auth

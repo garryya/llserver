@@ -1,3 +1,4 @@
+#!/usr/bin/python -B
 import flask
 
 report_view = flask.Blueprint('report', __name__)

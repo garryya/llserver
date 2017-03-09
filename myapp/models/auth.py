@@ -1,3 +1,4 @@
+#!/usr/bin/python -B
 import bcrypt
 
 

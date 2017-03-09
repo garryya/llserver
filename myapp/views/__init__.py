@@ -1,3 +1,4 @@
+#!/usr/bin/python -B
 class Permissions(object):
     """
     This class currently just serves as a namespace for permission names.
