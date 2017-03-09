@@ -1,46 +1,14 @@
 #!/usr/bin/python -B
 import flask
-from myapp.models import Session, DB
-from myapp.models import auth
 import httplib
-from functools import wraps
+from myapp.views import pre_check_credentials, verify_credentials
+from myapp.models import Session, DB
+
 
 auth_view = flask.Blueprint('auth', __name__)
 
 db = DB('data/credentials.db')
 
-
-def get_credentials():
-    try:
-        authorization = flask.request.form if hasattr(flask.request, 'form') and flask.request.form else flask.request.authorization
-        return dict(username=authorization['username'], password=authorization['password'])
-    except TypeError:
-        return None
-
-
-
-def pre_check_credentials(must_be_in=False, must_be_out=False):
-    def w(f):
-        @wraps(f)
-        def fwrapper():
-            if must_be_in and not Session.logged():
-                return 'Not logged in', httplib.OK
-            elif must_be_out and Session.logged():
-                return 'Already logged in ({})'.format(Session.username()), httplib.FORBIDDEN
-            creds = get_credentials()
-            if not creds:
-                return 'Logout failed: no credentials provided', httplib.FORBIDDEN
-            fwrapper.credentials = creds
-            return f()
-        return fwrapper
-    return w
-
-
-def verify_credentials(password, password_hash):
-    try:
-        auth.check_password(password, password_hash)
-    except auth.InvalidCredentials:
-        flask.abort(httplib.FORBIDDEN, 'Authentication failed')
 
 
 @auth_view.route('/login', methods=['POST'])
