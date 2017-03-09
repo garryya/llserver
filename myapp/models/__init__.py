@@ -3,17 +3,16 @@ from time import time
 import sqlite3
 
 #TODO logging
-#TODO remove cred check copypast
-#TODO session timeout
-#TODO use flas session, maybe...
+#TODO session redesign: session token, use flask session maybe..
+#TODO session inactivity logout
 #TODO configuration: flask conf, report path
+
 #TODO exception handling, unify HTTP error handling (abort)
-#TODO multiple-session, concurrency
-#TODO HTTP error constants (flask.ext.api?)
-#TODO differentiate auth errors
 #TODO SQLAlchemy, ORM
-#TODO testing: classes, group by functionality (login, logout etc.)
-#TODO testing: more mocking
+#TODO multiple-session, concurrency
+
+#TODO testing: classes, teardown, group by functionality (login, logout etc.)
+#TODO testing: mock it
 
 
 class Session:

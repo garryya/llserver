@@ -14,20 +14,31 @@ def get_report_filename(uuid):
     return os.path.join('data/reports', uuid+'.json')
 
 
-def build_report(report_file):
+def _in(f, k, vlist):
+    return not vlist or k in f and set(f[k]).intersection(vlist)
+
+
+def collect_files(rw, subject, report, iostatus=None):
+    if not rw in subject:
+        return
+    report[rw].update(set(f['filename'] for f in subject[rw] if _in(f, 'iostatus', iostatus)))
+
+
+def build_report(report_file, iostatus=None):
     if not os.path.exists(report_file):
         flask.abort(httplib.UNPROCESSABLE_ENTITY, 'Report not found: {}'.format(report_file))
     with open(report_file) as rf:
         raw_report = flask.json.load(rf)
         report = OrderedDict([('score', raw_report['score']),
                              ('malicious_activity', raw_report['malicious_activity']),
-                             ('file_reads', []),
-                             ('file_writes', [])])
+                             ('file_reads', set()),
+                             ('file_writes', set())])
         for subject in raw_report['report']['analysis_subjects']:
-            if 'file_reads' in subject:
-                report['file_reads'] += [f['filename'] for f in subject['file_reads']]
-            if 'file_writes' in subject:
-                report['file_writes'] += [f['filename'] for f in subject['file_writes']]
+            collect_files('file_reads', subject, report, iostatus=iostatus)
+            collect_files('file_writes', subject, report, iostatus=iostatus)
+        # make unique
+        report['file_reads'] = list(report['file_reads'])
+        report['file_writes'] = list(report['file_writes'])
     return report
 
 
@@ -107,13 +118,8 @@ def get_report(uuid):
     if Session.get()['permission'] != Permissions.PERMISSION_VIEW_REPORT:
         return 'Denied: not enough privileges', httplib.FORBIDDEN
     report_file = get_report_filename(uuid)
-    if not os.path.exists(report_file):
-        return 'Report not found: {}'.format(report_file), httplib.UNPROCESSABLE_ENTITY
-    with open(report_file) as rf:
-        raw_report = flask.json.load(rf)
-
-    # return flask.jsonify(report)
-    return flask.jsonify(Session.get())
+    report = build_report(report_file, iostatus=['FILE_OPENED', 'FILE_CREATED'])
+    return flask.jsonify(report)
 
 
 

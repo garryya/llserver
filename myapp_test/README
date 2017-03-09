@@ -1,4 +1,13 @@
+1. Auto testing
+
 From project root:
 
 > runserver.py
 > myapp_test/py.test [-s] [-v]
+
+2. Manually
+
+curl X POST -u 'jadmin@lastline.com:aio1jda61SJh' localhost:8080/auth/login
+curl localhost:8080/auth/whoami
+curl u 'jsmith@lastline.com:d81jklk16a' localhost:8080/report/get/232eaecccacd4af287116cff0263d447
+curl X POST -u 'jadmin@lastline.com:aio1jda61SJh' localhost:8080/auth/logout

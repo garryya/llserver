@@ -4,15 +4,26 @@ import httplib
 import httplib2
 import base64
 import json
+import sys
+
 
 http = httplib2.Http()
 root_address = 'http://127.0.0.1:8080/'
 
-test_user = {
+test_user1 = {
     "first_name": "Joe",
     "last_name": "Admin",
     "username": "jadmin@lastline.com",
     "password": "aio1jda61SJh",
+    "permission": "view_full_report"
+}
+
+test_user2 = {
+    "first_name": "John",
+    "last_name": "Smith",
+    "username": "jsmith@lastline.com",
+    "password": "d81jklk16a",
+    "permission": "view_report"
 }
 
 test_report_uuid = '232eaecccacd4af287116cff0263d447'
@@ -39,7 +50,7 @@ def isok(r):
 
 @pytest.fixture(scope='function')
 def restart():
-    httpreq('auth/logout', user=test_user['username'], password=test_user['password'], method='POST')
+    httpreq('auth/logout', user=test_user1['username'], password=test_user1['password'], method='POST')
     pass
 
 
@@ -67,17 +78,17 @@ def test_login___bad_user():
 
 
 def test_login___bad_password():
-    r, data = httpreq('auth/login', user=test_user['username'], password='BADPASS', method='POST')
+    r, data = httpreq('auth/login', user=test_user1['username'], password='BADPASS', method='POST')
     assert isstatus(r, httplib.FORBIDDEN)
 
 
 def test_login___good(restart):
-    r, data = httpreq('auth/login', user=test_user['username'], password=test_user['password'], method='POST')
+    r, data = httpreq('auth/login', user=test_user1['username'], password=test_user1['password'], method='POST')
     assert isstatus(r, httplib.OK)
     r, data = httpreq('auth/whoami')
     assert isstatus(r, httplib.OK)
     user = json.loads(data)
-    assert user['username'] == test_user['username']
+    assert user['username'] == test_user1['username']
 
 
 # LOGOUT
@@ -98,12 +109,12 @@ def test_logout___bad_user():
 
 
 def test_logout___bad_password():
-    r, data = httpreq('auth/logout', user=test_user['username'], password='BADPASS', method='POST')
+    r, data = httpreq('auth/logout', user=test_user1['username'], password='BADPASS', method='POST')
     assert isstatus(r, httplib.FORBIDDEN)
 
 
 def test_logout___good():
-    r, data = httpreq('auth/logout', user=test_user['username'], password=test_user['password'], method='POST')
+    r, data = httpreq('auth/logout', user=test_user1['username'], password=test_user1['password'], method='POST')
     assert isstatus(r, httplib.OK)
     r, data = httpreq('auth/whoami')
     assert isstatus(r, httplib.FORBIDDEN)
@@ -117,20 +128,24 @@ def test_logout___not_logged(restart):
 # GET_FULL_REPORT
 
 def test_get_full_report___not_logged(restart):
-    r, data = httpreq('report/get_full/'+test_report_uuid, user=test_user['username'], password=test_user['password'])
+    r, data = httpreq('report/get_full/' + test_report_uuid, user=test_user1['username'], password=test_user1['password'])
     assert isstatus(r, httplib.FORBIDDEN)
 
 
 def test_get_full_report___bad_uuid(restart):
-    r, data = httpreq('auth/login', user=test_user['username'], password=test_user['password'], method='POST')
+    r, data = httpreq('auth/login', user=test_user1['username'], password=test_user1['password'], method='POST')
     assert isstatus(r, httplib.OK)
-    r, data = httpreq('report/get_full/'+'BAD_UUID', user=test_user['username'], password=test_user['password'])
+    r, data = httpreq('report/get_full/' +'BAD_UUID', user=test_user1['username'], password=test_user1['password'])
     assert isstatus(r, httplib.UNPROCESSABLE_ENTITY)
 
 
 def test_get_full_report___good(restart):
-    r, data = httpreq('auth/login', user=test_user['username'], password=test_user['password'], method='POST')
+    r, data = httpreq('auth/login', user=test_user1['username'], password=test_user1['password'], method='POST')
     assert isstatus(r, httplib.OK)
-    r, data = httpreq('report/get_full/'+test_report_uuid, user=test_user['username'], password=test_user['password'])
+    r, data = httpreq('report/get_full/' + test_report_uuid, user=test_user1['username'], password=test_user1['password'])
     assert isstatus(r, httplib.OK)
 
+
+def test_get_full_report___no_permission():
+    r, data = httpreq('report/get/' + test_report_uuid, user=test_user1['username'], password=test_user1['password'])
+    assert isstatus(r, httplib.FORBIDDEN)
