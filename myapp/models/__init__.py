@@ -6,11 +6,12 @@ import sqlite3
 #TODO session redesign: session token, use flask session maybe..
 #TODO session inactivity logout
 #TODO configuration: flask conf, report path
-
+#TODO reports: more efficient json parsing (maybe) 
 #TODO exception handling, unify HTTP error handling (abort)
 #TODO SQLAlchemy, ORM
 #TODO multiple-session, concurrency
 
+#TODO testing: more report testing
 #TODO testing: classes, teardown, group by functionality (login, logout etc.)
 #TODO testing: mock it
 
