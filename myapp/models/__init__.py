@@ -6,8 +6,8 @@ import sqlite3
 #TODO remove cred check copypast
 #TODO session timeout
 #TODO use flas session, maybe...
-#TODO configuration file --> flask conf
-#TODO exception handling
+#TODO configuration: flask conf, report path
+#TODO exception handling, unify HTTP error handling (abort)
 #TODO multiple-session, concurrency
 #TODO HTTP error constants (flask.ext.api?)
 #TODO differentiate auth errors

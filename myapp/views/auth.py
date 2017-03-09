@@ -77,6 +77,5 @@ def logout():
     """
     if not Session.is_user(logout.credentials['username']):
         return 'Only {} can logout'.format(Session.username()), httplib.FORBIDDEN
-    verify_credentials(logout.credentials['password'], Session.get()['password_hash'])
     Session.unset()
     return "Logged out"

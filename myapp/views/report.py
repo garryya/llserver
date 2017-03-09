@@ -1,11 +1,40 @@
 #!/usr/bin/python -B
 import flask
+import os
+import httplib
+from myapp.views import pre_check_credentials, Permissions
+from collections import OrderedDict
+from myapp.models import Session
+
 
 report_view = flask.Blueprint('report', __name__)
 
 
-@report_view.route('/get_full', methods=['GET'])
-def get_full_report():
+def get_report_filename(uuid):
+    return os.path.join('data/reports', uuid+'.json')
+
+
+def build_report(report_file):
+    if not os.path.exists(report_file):
+        flask.abort(httplib.UNPROCESSABLE_ENTITY, 'Report not found: {}'.format(report_file))
+    with open(report_file) as rf:
+        raw_report = flask.json.load(rf)
+        report = OrderedDict([('score', raw_report['score']),
+                             ('malicious_activity', raw_report['malicious_activity']),
+                             ('file_reads', []),
+                             ('file_writes', [])])
+        for subject in raw_report['report']['analysis_subjects']:
+            if 'file_reads' in subject:
+                report['file_reads'] += [f['filename'] for f in subject['file_reads']]
+            if 'file_writes' in subject:
+                report['file_writes'] += [f['filename'] for f in subject['file_writes']]
+    return report
+
+
+
+@report_view.route('/get_full/<uuid>', methods=['GET'])
+@pre_check_credentials(must_be_in=True)
+def get_full_report(uuid):
     """
     Return a report describing the behavior of a file under analysis in a sandboxed execution.
 
@@ -33,11 +62,16 @@ def get_full_report():
 
     If the uuid is not found, return an HTTP 422 error.
     """
-    return "TODO: Implement full report"
+    if Session.get()['permission'] != Permissions.PERMISSION_VIEW_FULL_REPORT:
+        return 'Denied: not enough privileges', httplib.FORBIDDEN
+    report_file = get_report_filename(uuid)
+    report = build_report(report_file)
+    return flask.jsonify(report)
 
 
-@report_view.route('/get', methods=['GET'])
-def get_report():
+@report_view.route('/get/<uuid>', methods=['GET'])
+@pre_check_credentials(must_be_in=True)
+def get_report(uuid):
     """
     Return a report.
 
@@ -70,7 +104,16 @@ def get_report():
         }
 
     """
-    return "TODO: Implement report"
+    if Session.get()['permission'] != Permissions.PERMISSION_VIEW_REPORT:
+        return 'Denied: not enough privileges', httplib.FORBIDDEN
+    report_file = get_report_filename(uuid)
+    if not os.path.exists(report_file):
+        return 'Report not found: {}'.format(report_file), httplib.UNPROCESSABLE_ENTITY
+    with open(report_file) as rf:
+        raw_report = flask.json.load(rf)
+
+    # return flask.jsonify(report)
+    return flask.jsonify(Session.get())
 
 
 
